@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Mon graphique avec Flask et Chart.js</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+    <style>
+        .row1-chart-container, .row2-chart-container {
+          display: flex;
+          justify-content: space-around;
+          align-items: center;
+        }
+        
+        canvas {
+          width: 30%;
+          height: 250px;
+        }
+
+        #title{
+            color: grey;
+            text-align: center;
+        }
+      </style>
+      
+
+    <h1 id="title"> --- S U P E R M A R K E T'S --- </h1>
+    <br>
+    
+    <div class="row1-chart-container">
+        <!-- barplot -->
+        <div>
+        <h3>Total sales per Branch</h3>
+        <div style="background-color: black;">
+          <canvas id="myChart"></canvas>
+        
+        <script>
+          var data = {{ data_un|tojson }};
+          
+          var labels = [];
+          var values = [];
+          
+          for (var key in data) {
+              labels.push(key);
+              values.push(data[key]);
+          }
+          
+          var chartData = {
+              labels: labels,
+              datasets: [{
+              label: "Branch per sales",
+              data: values,
+              backgroundColor: "rgba(255,99,132,0.2)",
+              borderColor: "rgba(255,99,132,1)",
+              borderWidth: 1
+              }]
+          };
+          
+          var ctx = document.getElementById("myChart").getContext("2d");
+          var myChart = new Chart(ctx, {
+              type: 'bar',
+              data: chartData,
+              options: {}
+          });
+        </script>
+        </div>
+        <br>
+        </div>
+
+        <div>
+            <h3>Total sales per Gender</h3>
+          <div style="background-color: black;">
+              <canvas id="mydonut"></canvas>
+            
+          <script>
+      
+              var data = {{ data_deux|tojson }};
+                  
+                  var labels = [];
+                  var values = [];
+                  
+                  for (var key in data) {
+                      labels.push(key);
+                      values.push(data[key]);
+                  }
+      
+              var ctx = document.getElementById("mydonut").getContext("2d");
+              var myChart = new Chart(ctx, {
+                  type: 'doughnut',
+                  data: {
+                      labels: labels,
+                      datasets: [{
+                          data: values,
+                          backgroundColor: ["#FF6384", "#36A2EB", "#FFCE56"],
+                          hoverBackgroundColor: ["#FF6384", "#36A2EB", "#FFCE56"]
+                      }]
+                  },
+                  options: {
+                      cutoutPercentage: 60
+                  }
+              });
+      
+          </script>
+        </div>
+
+      </div>
+
+    </div>
+    <br><br>
+
+
+    <div class="row2-chart-container">
+        <!-- line chart -->
+        <div>
+            <h3>Total sales per hour per Product line </h3>
+            <div style="background-color: black;">
+                <canvas id="mymultiChart"></canvas>
+                
+                <script>
+                    // Step 1: Fetch the data from the API endpoint
+                    fetch('/mulChart_data')
+                      .then(response => response.json())
+                      .then(data => {
+                        // Step 2: Parse the JSON data into a JavaScript object
+                        const chartData = {
+                          labels: Object.keys(data["Electronic_accessories"]),
+                          datasets: [
+                            {
+                              label: "Electronic Accessories",
+                              data: Object.values(data["Electronic_accessories"]),
+                              fill: false,
+                              borderColor: "red"
+                            },
+                            {
+                              label: "Fashion Accessories",
+                              data: Object.values(data["Fashion_accessories"]),
+                              fill: false,
+                              borderColor: "blue"
+                            },
+                            {
+                              label: "Food and Beverages",
+                              data: Object.values(data["Food_and_beverages"]),
+                              fill: false,
+                              borderColor: "green"
+                            },
+                            {
+                              label: "Health and Beauty",
+                              data: Object.values(data["Health_and_beauty"]),
+                              fill: false,
+                              borderColor: "purple"
+                            },
+                            {
+                              label: "Home and Lifestyle",
+                              data: Object.values(data["Home_and_lifestyle"]),
+                              fill: false,
+                              borderColor: "orange"
+                            },
+                            {
+                              label: "Sports and Travel",
+                              data: Object.values(data["Sports_and_travel"]),
+                              fill: false,
+                              borderColor: "gray"
+                            }
+                          ]
+                        };
+                
+                        // Step 3: Define the chart configuration
+                        const chartConfig = {
+                          type: "line",
+                          data: chartData,
+                          options: {
+                            responsive: true,
+                            title: {
+                              display: true,
+                              text: "Sales by Category"
+                            },
+                            tooltips: {
+                              mode: "index",
+                              intersect: false
+                            },
+                            hover: {
+                              mode: "nearest",
+                              intersect: true
+                            },
+                            scales: {
+                              xAxes: [{
+                                display: true,
+                                scaleLabel: {
+                                  display: true,
+                                  labelString: "Month"
+                                }
+                              }],
+                              yAxes: [{
+                                display: true,
+                                scaleLabel: {
+                                  display: true,
+                                  labelString: "Sales ($)"
+                                }
+                              }]
+                            }
+                          }
+                        };
+                
+                        // Step 4: Create a new Chart.js chart instance
+                        const myChart = new Chart(document.getElementById("mymultiChart"), chartConfig);
+                      })
+                      .catch(error => console.error(error));
+                  </script>
+            </div>
+        
+        </div>
+        <br>
+        <br>
+
+
+        <div>
+        <h3>Total sales per Month </h3>
+          <div style="background-color: black;">
+              <canvas id="mylineChart"></canvas>
+            
+          <script>
+              var data = {{ data_trois|tojson }};
+                  
+                  var labels = [];
+                  var values = [];
+                  
+                  for (var key in data) {
+                      labels.push(key);
+                      values.push(data[key]);
+                  }
+      
+              var ctx = document.getElementById("mylineChart").getContext("2d");
+              var myChart = new Chart(ctx, {
+                  type: 'line',
+                  data: {
+                      labels: labels,
+                      datasets: [{
+                          label:"Sales per month",
+                          data: values
+                      }]
+                  },
+                  options: {
+                      cutoutPercentage: 60
+                  }
+              });
+          </script>
+        </div>
+
+
+      </div>
+
+    </div>
+
+    </div>
+    
+  <br>
+  <br>
+  <br>
+  <h1 style="text-align: center;">Member vs No member Analysis </h1><br><br>
+    <div class="row3-chart-container">
+      <div style="background-color: white;">
+        <canvas id="myRadar"></canvas>
+      
+    <script>
+        fetch('/radar_data')
+            .then(response => response.json())
+            .then(data => {
+                var labels = Object.keys(data.member);
+    
+                var member_values = Object.values(data.member);
+                var no_member_values = Object.values(data.no_member);
+    
+                var chartData = {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Member',
+                        data: member_values,
+                        backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                        borderColor: 'rgba(255, 99, 132, 1)',
+                        borderWidth: 1
+                    }, {
+                        label: 'Non-member',
+                        data: no_member_values,
+                        backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 1
+                    }]
+                };
+    
+                var ctx = document.getElementById("myRadar").getContext("2d");
+                var myChart = new Chart(ctx, {
+                    type: 'radar',
+                    data: chartData,
+                    options: {}
+                });
+            });
+    </script>
+    </div>
+    </div>
+
+
+
+
+  
+</body>
+</html>
+
+
