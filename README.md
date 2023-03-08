@@ -42,3 +42,6 @@ windows : python -m venv *nom_environnement*
 - lancer la commande : 
 
 pip install -r prequirements.txt
+
+
+###### python app.py
